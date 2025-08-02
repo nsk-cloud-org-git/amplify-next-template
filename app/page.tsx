@@ -33,6 +33,10 @@ export default function App() {
 
   return (
     <main>
+      <h1>Welcome to Start5 App</h1>
+      <p>Transforming Daily Experiences thru AI</p>
+      <br/>
+      
       <h1>My todos</h1>
       <button onClick={createTodo}>+ new</button>
       <ul>
