@@ -70,7 +70,7 @@ export default function HomePage() {
       {/* ✅ Show Todos only if user is logged in */}
       {user ? (
         <section style={{ marginTop: "20px" }}>
-          <h2>Hello, {user.email}</h2>
+          <h2>Hello, {user.username}</h2>
           <h3>My Todos</h3>
           <button onClick={createTodo}>+ New Todo</button>
           <ul>
