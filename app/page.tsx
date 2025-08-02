@@ -7,12 +7,13 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
+import { withAuthenticator } from "@aws-amplify/ui-react";  // ✅ Import Authenticator HOC
 
 Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-export default function App() {
+function App({ signOut, user }: any) {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   function listTodos() {
@@ -26,17 +27,23 @@ export default function App() {
   }, []);
 
   function createTodo() {
-    client.models.Todo.create({
-      content: window.prompt("Todo content"),
-    });
+    const content = window.prompt("Todo content");
+    if (content) {
+      client.models.Todo.create({ content });
+    }
   }
 
   return (
     <main>
-      <h1>Welcome to Start5 App</h1>
+      <h1>Welcome {user?.username || "to Start5 App"}</h1>
       <p>Transforming Daily Experiences thru AI</p>
+
+      <div style={{ marginTop: "20px" }}>
+        <button onClick={signOut}>Logout</button>  {/* ✅ Logout button */}
+      </div>
+
       <br/>
-      
+
       <h1>My todos</h1>
       <button onClick={createTodo}>+ new</button>
       <ul>
@@ -54,3 +61,5 @@ export default function App() {
     </main>
   );
 }
+
+export default withAuthenticator(App);  // ✅ Wrap with Amplify Authenticator
