@@ -1,0 +1,20 @@
+type TrainingForm @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  Name: String
+  Course: String
+}
+
+type Todo @model {
+  id: ID!
+  content: String!
+  isDone: Boolean
+  createdAt: AWSDateTime
+}
+
+type NewTrainingForm @model {
+  id: ID!
+  name: String!
+  topic: String!
+  date: AWSDate!
+}
+ 

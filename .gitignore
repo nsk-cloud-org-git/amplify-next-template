@@ -39,3 +39,40 @@ next-env.d.ts
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+
+# === Node & Next.js build files ===
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# === Amplify local environment ===
+amplify/#current-cloud-backend
+amplify/mock-data/
+amplify/backend/.temp/
+amplify/backend/awscloudformation/
+amplify/.config/local-*
+amplify/team-provider-info.json
+
+# === Environment & secrets ===
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# === Logs & debug ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# === OS & editor files ===
+.DS_Store
+.vscode/
+.idea/
+
+# === Coverage & test output ===
+coverage/
+jest/
