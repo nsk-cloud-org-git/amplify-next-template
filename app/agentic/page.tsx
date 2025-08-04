@@ -131,7 +131,7 @@ export default function AgenticPage() {
     <Authenticator>
       {({ user, signOut }) => (
         <main style={{ margin: 0, padding: 0 }}>
-          <Banner user={user} signOut={signOut} />
+          <Banner user={user} />
 
           <div style={{ padding: "0 20px" }}>
             <h1>Agentic AI - Training Management</h1>

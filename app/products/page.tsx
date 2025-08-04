@@ -12,7 +12,7 @@ export default function ProductsPage() {
     <Authenticator>
       {({ user, signOut }) => (
         <main style={{ margin: 0, padding: 0 }}>
-          <Banner user={user} signOut={signOut} />
+          <Banner user={user} />
           <div style={{ padding: "0 20px" }}>
             <h1>Our Products</h1>
             <p>Discover our innovative AI-powered solutions</p>
