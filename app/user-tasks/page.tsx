@@ -16,8 +16,11 @@ const client = generateClient<Schema>();
 export default function UserTasksPage() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
+    const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetchTodos();
+    fetchTodos(); checkUser();
   }, []);
 
   async function fetchTodos() {
@@ -82,6 +85,19 @@ export default function UserTasksPage() {
       console.error("Error updating todo:", error);
     }
   }
+
+  async function checkUser() {
+    try {
+      const currentUser = await getCurrentUser();
+      const userAttributes = await fetchUserAttributes();
+      setUser({ ...currentUser, attributes: userAttributes });
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   return (
     <Authenticator>
