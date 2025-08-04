@@ -15,13 +15,21 @@ const client = generateClient<Schema>();
 
 export default function UserTasksPage() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-    const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
-    fetchTodos(); checkUser();
+    fetchTodos();
+    getUserName();
   }, []);
+
+  async function getUserName() {
+    try {
+      const attributes = await fetchUserAttributes();
+      setUserName(attributes.name || "");
+    } catch (error) {
+      console.error("Error fetching user attributes:", error);
+    }
+  }
 
   async function fetchTodos() {
     try {
@@ -86,17 +94,7 @@ export default function UserTasksPage() {
     }
   }
 
-  async function checkUser() {
-    try {
-      const currentUser = await getCurrentUser();
-      const userAttributes = await fetchUserAttributes();
-      setUser({ ...currentUser, attributes: userAttributes });
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }
+
 
 
   return (
@@ -111,7 +109,7 @@ export default function UserTasksPage() {
 
             {user ? (
               <section style={{ marginTop: "20px" }}>
-                <h2>Hello, {user.attributes?.name || user.username}</h2>
+                <h2>Hello, {userName || user.username}</h2>
                 <h3>My Todos</h3>
                 <button onClick={createTodo}>+ New Todo</button>
                 <ul>
