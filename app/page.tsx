@@ -1,136 +1,106 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplifyconfiguration.json";
 import "@aws-amplify/ui-react/styles.css";
-import { Authenticator } from "@aws-amplify/ui-react";
 import Banner from "./components/Banner";
+//import { getCurrentUser } from "aws-amplify/auth";
+import { getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
 
-// ✅ Configure Amplify first
 Amplify.configure(outputs);
 
-// ✅ Create client globally so it's available in component
-const client = generateClient<Schema>();
-
 export default function HomePage() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTodos();
+    checkUser();
   }, []);
 
-  async function fetchTodos() {
+  async function checkUser() {
     try {
-      const result = await client.models.Todo.list();
-      console.log("Fetched todos:", result);
-      setTodos(result.data || []);
+      const currentUser = await getCurrentUser();
+      const userAttributes = await fetchUserAttributes();
+      setUser({ ...currentUser, attributes: userAttributes });
     } catch (error) {
-      console.error("Error fetching todos:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   }
 
-  async function createTodo() {
-    const content = window.prompt("Todo content");
-    if (content) {
-      try {
-        if (!client.models.Todo || typeof client.models.Todo.create !== "function") {
-          alert("Todo model is not initialized. Check Amplify config or schema.");
-          return;
-        }
-
-        const result = await client.models.Todo.create({
-          content,
-          createdAt: new Date().toISOString(),
-          isDone: false,
-        });
-
-        console.log("Created todo:", result);
-
-        if (result.data) {
-          setTodos([...todos, result.data]);
-        }
-      } catch (error) {
-        console.error("Error creating todo:", error);
-        alert("Failed to create todo: " + (error as Error).message);
-      }
-    }
-  }
-
-  async function toggleTodo(id: string, isDone: boolean) {
-    try {
-      if (!client.models.Todo || typeof client.models.Todo.update !== "function") {
-        alert("Todo update not available. Check Amplify config.");
-        return;
-      }
-
-      const result = await client.models.Todo.update({
-        id,
-        isDone: !isDone,
-      });
-
-      console.log("Updated todo:", result);
-
-      if (result.data) {
-        setTodos(
-          todos.map((todo) =>
-            todo.id === id ? result.data! : todo
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error updating todo:", error);
-    }
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <Authenticator>
-      {({ user, signOut }) => (
-        <main style={{ margin: 0, padding: 0 }}>
-          <Banner user={user} signOut={signOut} />
+    <main style={{ margin: 0, padding: 0 }}>
+      <Banner user={user} />
 
           <div style={{ padding: "0 20px" }}>
-            <h1>Welcome to Start5 App</h1>
+            <h1>Welcome to Start5 Technology</h1>
             <p>Transforming Daily Experiences thru AI</p>
 
-            {user ? (
-              <section style={{ marginTop: "20px" }}>
-                <h2>Hello, {user.username}</h2>
-                <h3>My Todos</h3>
-                <button onClick={createTodo}>+ New Todo</button>
-                <ul>
-                  {todos.map((todo) => (
-                    <li key={todo.id} style={{ margin: "10px 0" }}>
-                      <input
-                        type="checkbox"
-                        checked={todo.isDone || false}
-                        onChange={() => toggleTodo(todo.id, todo.isDone || false)}
-                        style={{ marginRight: "10px" }}
-                      />
-                      <span
-                        style={{
-                          textDecoration: todo.isDone ? "line-through" : "none",
-                          opacity: todo.isDone ? 0.6 : 1,
-                        }}
-                      >
-                        {todo.content}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={fetchTodos}>Refresh Todos</button>
-              </section>
-            ) : (
-              <section style={{ marginTop: "20px" }}>
-                <h3>Please log in to view and create Todos.</h3>
-              </section>
-            )}
-          </div>
-        </main>
-      )}
-    </Authenticator>
+        {user ? (
+          <section style={{ marginTop: "20px" }}>
+            <h2>Hello, {user.attributes?.name || user.username}</h2>
+            <p>Welcome to your AI-powered productivity platform!</p>
+            <div style={{ marginTop: "30px" }}>
+              <h3>Quick Actions</h3>
+              <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+                <a href="/user-tasks" style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: "4px"
+                }}>Manage Tasks</a>
+                <a href="/agentic" style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: "4px"
+                }}>AI Training</a>
+                <a href="/services" style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#6f42c1",
+                  color: "white",
+                  textDecoration: "none",
+                  borderRadius: "4px"
+                }}>AI Chatbot</a>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section style={{ marginTop: "20px" }}>
+            <h2>Welcome to Start5 Technology</h2>
+            <p>Transform your daily experiences with AI-powered solutions.</p>
+            <div style={{ marginTop: "30px" }}>
+              <h3>Get Started</h3>
+              <p>Sign in to access your personalized dashboard with AI tools, task management, and more.</p>
+              <button 
+                onClick={() => window.location.href = '/signin'}
+                style={{
+                  padding: "12px 24px",
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  marginTop: "10px"
+                }}
+              >
+                Sign In to Get Started
+              </button>
+            </div>
+          </section>
+        )}
+            
+      </div>
+    </main>
   );
 }

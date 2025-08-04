@@ -1,11 +1,24 @@
 "use client";
 
+import { signOut } from "aws-amplify/auth";
+
 interface BannerProps {
   user?: any;
-  signOut?: () => void;
 }
 
-export default function Banner({ user, signOut }: BannerProps) {
+export default function Banner({ user }: BannerProps) {
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      window.location.reload();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleSignIn = () => {
+    window.location.href = '/signin';
+  };
   return (
     <>
       <div style={{ width: "100%", marginBottom: "0" }}>
@@ -34,12 +47,22 @@ export default function Banner({ user, signOut }: BannerProps) {
       >
         <div style={{ display: "flex", gap: "30px" }}>
           <a href="/" style={{ color: "white", textDecoration: "none" }}>Home</a>
-          <a href="/products" style={{ color: "white", textDecoration: "none" }}>Products</a>
-          <a href="/services" style={{ color: "white", textDecoration: "none" }}>Services</a>
-          <a href="/about" style={{ color: "white", textDecoration: "none" }}>About Us</a>
-          <a href="/agentic" style={{ color: "white", textDecoration: "none" }}>Agentic</a>
+          {user && (
+            <>
+              <a href="/user-tasks" style={{ color: "white", textDecoration: "none" }}>User Tasks</a>
+              <a href="/agentic" style={{ color: "white", textDecoration: "none" }}>Agentic</a>
+              <a href="/services" style={{ color: "white", textDecoration: "none" }}>Services</a>
+            </>
+          )}
         </div>
-        {user && <button onClick={signOut} style={{ background: "white", color: "#4285f4", border: "none", padding: "8px 16px", borderRadius: "4px" }}>Logout</button>}
+        {user ? (
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <a href="/profile" style={{ color: "white", textDecoration: "none", padding: "8px 16px", background: "rgba(255,255,255,0.2)", borderRadius: "4px" }}>Profile</a>
+            <button onClick={handleSignOut} style={{ background: "white", color: "#4285f4", border: "none", padding: "8px 16px", borderRadius: "4px" }}>Logout</button>
+          </div>
+        ) : (
+          <button onClick={handleSignIn} style={{ background: "white", color: "#4285f4", border: "none", padding: "8px 16px", borderRadius: "4px" }}>Sign In</button>
+        )}
       </nav>
     </>
   );

@@ -5,6 +5,7 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplifyconfiguration.json";
 import Banner from "../components/Banner";
+import { getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
 
 Amplify.configure(outputs);
 
@@ -47,7 +48,7 @@ export default function ServicesPage() {
     <Authenticator>
       {({ user, signOut }) => (
         <main style={{ margin: 0, padding: 0 }}>
-          <Banner user={user} signOut={signOut} />
+          <Banner user={user} />
           <div style={{ padding: "0 20px", maxWidth: "1200px", margin: "0 auto" }}>
             <h1>🤖 AI Chatbot Integration with AWS Bedrock</h1>
             <p>Step-by-step guide to integrate Claude Sonnet 3.5 with your Amplify application</p>
