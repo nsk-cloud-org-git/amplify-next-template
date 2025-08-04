@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplifyconfiguration.json";
@@ -10,127 +8,86 @@ import "@aws-amplify/ui-react/styles.css";
 import { Authenticator } from "@aws-amplify/ui-react";
 import Banner from "./components/Banner";
 
-// ✅ Configure Amplify first
 Amplify.configure(outputs);
 
-// ✅ Create client globally so it's available in component
-const client = generateClient<Schema>();
-
 export default function HomePage() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  async function fetchTodos() {
-    try {
-      const result = await client.models.Todo.list();
-      console.log("Fetched todos:", result);
-      setTodos(result.data || []);
-    } catch (error) {
-      console.error("Error fetching todos:", error);
-    }
-  }
-
-  async function createTodo() {
-    const content = window.prompt("Todo content");
-    if (content) {
-      try {
-        if (!client.models.Todo || typeof client.models.Todo.create !== "function") {
-          alert("Todo model is not initialized. Check Amplify config or schema.");
-          return;
-        }
-
-        const result = await client.models.Todo.create({
-          content,
-          createdAt: new Date().toISOString(),
-          isDone: false,
-        });
-
-        console.log("Created todo:", result);
-
-        if (result.data) {
-          setTodos([...todos, result.data]);
-        }
-      } catch (error) {
-        console.error("Error creating todo:", error);
-        alert("Failed to create todo: " + (error as Error).message);
-      }
-    }
-  }
-
-  async function toggleTodo(id: string, isDone: boolean) {
-    try {
-      if (!client.models.Todo || typeof client.models.Todo.update !== "function") {
-        alert("Todo update not available. Check Amplify config.");
-        return;
-      }
-
-      const result = await client.models.Todo.update({
-        id,
-        isDone: !isDone,
-      });
-
-      console.log("Updated todo:", result);
-
-      if (result.data) {
-        setTodos(
-          todos.map((todo) =>
-            todo.id === id ? result.data! : todo
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error updating todo:", error);
-    }
-  }
-
+ 
   return (
-    <Authenticator>
-      {({ user, signOut }) => (
+  <Authenticator
+    formFields={{
+      signUp: {
+        name: {
+          label: 'Full Name',
+          placeholder: 'Enter your full name',
+          isRequired: true,
+          order: 1
+        },
+        email: {
+          label: 'Email',
+          placeholder: 'Enter your email',
+          isRequired: true,
+          order: 2
+        },
+        password: {
+          label: 'Password',
+          placeholder: 'Enter your password',
+          isRequired: true,
+          order: 3
+        }
+      }
+    }}
+  >
+      {({ user, signOut }) => {
+        console.log("Authenticated user:", user);
+        return (
         <main style={{ margin: 0, padding: 0 }}>
           <Banner user={user} signOut={signOut} />
 
           <div style={{ padding: "0 20px" }}>
-            <h1>Welcome to Start5 App</h1>
+            <h1>Welcome to Start5 Technology</h1>
             <p>Transforming Daily Experiences thru AI</p>
 
             {user ? (
               <section style={{ marginTop: "20px" }}>
-                <h2>Hello, {user.username}</h2>
-                <h3>My Todos</h3>
-                <button onClick={createTodo}>+ New Todo</button>
-                <ul>
-                  {todos.map((todo) => (
-                    <li key={todo.id} style={{ margin: "10px 0" }}>
-                      <input
-                        type="checkbox"
-                        checked={todo.isDone || false}
-                        onChange={() => toggleTodo(todo.id, todo.isDone || false)}
-                        style={{ marginRight: "10px" }}
-                      />
-                      <span
-                        style={{
-                          textDecoration: todo.isDone ? "line-through" : "none",
-                          opacity: todo.isDone ? 0.6 : 1,
-                        }}
-                      >
-                        {todo.content}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={fetchTodos}>Refresh Todos</button>
+                <h2>Hello, {user.attributes?.name || user.username}</h2>
+                <p>Welcome to your AI-powered productivity platform!</p>
+                <div style={{ marginTop: "30px" }}>
+                  <h3>Quick Actions</h3>
+                  <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+                    <a href="/user-tasks" style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      textDecoration: "none",
+                      borderRadius: "4px"
+                    }}>Manage Tasks</a>
+                    <a href="/agentic" style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      textDecoration: "none",
+                      borderRadius: "4px"
+                    }}>AI Training</a>
+                    <a href="/services" style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#6f42c1",
+                      color: "white",
+                      textDecoration: "none",
+                      borderRadius: "4px"
+                    }}>AI Chatbot</a>
+                  </div>
+                </div>
               </section>
             ) : (
               <section style={{ marginTop: "20px" }}>
-                <h3>Please log in to view and create Todos.</h3>
+                <h3>Please log in to access your dashboard.</h3>
               </section>
             )}
+            
           </div>
         </main>
-      )}
+        );
+      }}
     </Authenticator>
   );
 }

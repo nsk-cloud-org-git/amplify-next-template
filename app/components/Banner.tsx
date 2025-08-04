@@ -34,10 +34,9 @@ export default function Banner({ user, signOut }: BannerProps) {
       >
         <div style={{ display: "flex", gap: "30px" }}>
           <a href="/" style={{ color: "white", textDecoration: "none" }}>Home</a>
-          <a href="/products" style={{ color: "white", textDecoration: "none" }}>Products</a>
-          <a href="/services" style={{ color: "white", textDecoration: "none" }}>Services</a>
-          <a href="/about" style={{ color: "white", textDecoration: "none" }}>About Us</a>
+          <a href="/user-tasks" style={{ color: "white", textDecoration: "none" }}>User Tasks</a>
           <a href="/agentic" style={{ color: "white", textDecoration: "none" }}>Agentic</a>
+          <a href="/services" style={{ color: "white", textDecoration: "none" }}>Services</a>
         </div>
         {user && <button onClick={signOut} style={{ background: "white", color: "#4285f4", border: "none", padding: "8px 16px", borderRadius: "4px" }}>Logout</button>}
       </nav>
