@@ -9,6 +9,7 @@ import outputs from "@/amplifyconfiguration.json";
 import "@aws-amplify/ui-react/styles.css";
 import { Authenticator } from "@aws-amplify/ui-react";
 import Banner from "../components/Banner";
+import { getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
 
 // ✅ Configure Amplify
 Amplify.configure(outputs);

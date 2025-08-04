@@ -5,6 +5,7 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplifyconfiguration.json";
 import Banner from "../components/Banner";
+import { getCurrentUser, fetchUserAttributes } from "aws-amplify/auth";
 
 Amplify.configure(outputs);
 
