@@ -40,7 +40,7 @@ export default function SignInPage() {
             window.location.href = '/';
             return <div>Redirecting...</div>;
           }
-          return null;
+          return <div></div>;
         }}
       </Authenticator>
     </div>
